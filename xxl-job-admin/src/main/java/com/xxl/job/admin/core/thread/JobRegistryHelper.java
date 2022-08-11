@@ -70,6 +70,7 @@ public class JobRegistryHelper {
 
 							// fresh online address (admin/executor)
 							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
+							// 获取所有存活的 注册信息
 							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (list != null) {
 								for (XxlJobRegistry item: list) {
