@@ -58,11 +58,11 @@ public class JobRegistryHelper {
 			public void run() {
 				while (!toStop) {
 					try {
-						// auto registry group
+						// auto registry group , 执行器地址类型：0=自动注册、1=手动录入
 						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
 						if (groupList!=null && !groupList.isEmpty()) {
 
-							// remove dead address (admin/executor)
+							// remove dead address (admin/executor), 删除死掉的 注册地址信息
 							List<Integer> ids = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findDead(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (ids!=null && ids.size()>0) {
 								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids);
@@ -70,29 +70,35 @@ public class JobRegistryHelper {
 
 							// fresh online address (admin/executor)
 							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
-							// 获取所有存活的 注册信息
+							// 获取所有存活的 注册地址信息
 							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (list != null) {
 								for (XxlJobRegistry item: list) {
+									// 自动注册
 									if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
+										// 执行器名称
 										String appname = item.getRegistryKey();
 										List<String> registryList = appAddressMap.get(appname);
 										if (registryList == null) {
 											registryList = new ArrayList<String>();
 										}
 
+										// 不存在添加
 										if (!registryList.contains(item.getRegistryValue())) {
 											registryList.add(item.getRegistryValue());
 										}
+										// 刷新地址
 										appAddressMap.put(appname, registryList);
 									}
 								}
 							}
 
 							// fresh group address
+							// 遍历所有 自动注册的执行器
 							for (XxlJobGroup group: groupList) {
 								List<String> registryList = appAddressMap.get(group.getAppname());
 								String addressListStr = null;
+								// 使用注册地址信息 刷新 执行器的注册地址列表
 								if (registryList!=null && !registryList.isEmpty()) {
 									Collections.sort(registryList);
 									StringBuilder addressListSB = new StringBuilder();
@@ -102,9 +108,11 @@ public class JobRegistryHelper {
 									addressListStr = addressListSB.toString();
 									addressListStr = addressListStr.substring(0, addressListStr.length()-1);
 								}
+								// 设置新的 注册地址信息
 								group.setAddressList(addressListStr);
 								group.setUpdateTime(new Date());
 
+								// 更新
 								XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().update(group);
 							}
 						}
@@ -160,8 +168,10 @@ public class JobRegistryHelper {
 		registryOrRemoveThreadPool.execute(new Runnable() {
 			@Override
 			public void run() {
+				// 先直接更新操作，如果影响行数小于1，则插入。
 				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryUpdate(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
 				if (ret < 1) {
+					// 插入
 					XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registrySave(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue(), new Date());
 
 					// fresh
@@ -186,6 +196,7 @@ public class JobRegistryHelper {
 		registryOrRemoveThreadPool.execute(new Runnable() {
 			@Override
 			public void run() {
+				// 删除注册信息
 				int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().registryDelete(registryParam.getRegistryGroup(), registryParam.getRegistryKey(), registryParam.getRegistryValue());
 				if (ret > 0) {
 					// fresh

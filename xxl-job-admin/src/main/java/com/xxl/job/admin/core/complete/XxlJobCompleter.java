@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.text.MessageFormat;
 
 /**
+ * 对应控制台 - 任务管理， 当指定了子任务时，负任务执行完毕，需要触发执行子任务。
  * @author xuxueli 2020-10-30 20:43:10
  */
 public class XxlJobCompleter {
@@ -41,6 +42,8 @@ public class XxlJobCompleter {
 
 
     /**
+     * 触发子任务执行
+     *
      * do somethind to finish job
      */
     private static void finishJob(XxlJobLog xxlJobLog){
@@ -49,6 +52,7 @@ public class XxlJobCompleter {
         String triggerChildMsg = null;
         if (XxlJobContext.HANDLE_CODE_SUCCESS == xxlJobLog.getHandleCode()) {
             XxlJobInfo xxlJobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(xxlJobLog.getJobId());
+            // 校验子任务ID合法性
             if (xxlJobInfo!=null && xxlJobInfo.getChildJobId()!=null && xxlJobInfo.getChildJobId().trim().length()>0) {
                 triggerChildMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_child_run") +"<<<<<<<<<<< </span><br>";
 
@@ -57,6 +61,7 @@ public class XxlJobCompleter {
                     int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
                     if (childJobId > 0) {
 
+                        // 触发执行
                         JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
