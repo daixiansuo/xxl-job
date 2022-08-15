@@ -28,6 +28,7 @@ public class XxlJobLog {
 	
 	// handle info
 	private Date handleTime;
+	// default is 0
 	private int handleCode;
 	private String handleMsg;
 
