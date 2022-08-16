@@ -8,13 +8,13 @@ import com.xxl.job.core.biz.model.*;
 public interface ExecutorBiz {
 
     /**
-     * beat
+     * beat 心跳
      * @return
      */
     public ReturnT<String> beat();
 
     /**
-     * idle beat
+     * idle beat - 空闲心跳检测
      *
      * @param idleBeatParam
      * @return

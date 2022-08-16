@@ -177,6 +177,8 @@ public class TriggerCallbackThread {
                 callbackLog(callbackParamList, "<br>----------- xxl-job job callback error, errorMsg:" + e.getMessage());
             }
         }
+
+        // 回调失败，写入本地日志文件
         if (!callbackRet) {
             appendFailCallbackFile(callbackParamList);
         }

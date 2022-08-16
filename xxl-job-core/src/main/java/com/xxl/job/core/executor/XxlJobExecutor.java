@@ -74,7 +74,7 @@ public class XxlJobExecutor  {
         initAdminBizList(adminAddresses, accessToken);
 
 
-        // init JobLogFileCleanThread
+        // init JobLogFileCleanThread  ==> 日志清理
         JobLogFileCleanThread.getInstance().start(logRetentionDays);
 
         // init TriggerCallbackThread
@@ -188,13 +188,18 @@ public class XxlJobExecutor  {
             return;
         }
 
+        // jobhandler name
         String name = xxlJob.value();
         //make and simplify the variables since they'll be called several times later
         Class<?> clazz = bean.getClass();
         String methodName = executeMethod.getName();
+
+        // 校验 任务执行器名称 是否合法
         if (name.trim().length() == 0) {
             throw new RuntimeException("xxl-job method-jobhandler name invalid, for[" + clazz + "#" + methodName + "] .");
         }
+
+        // 校验 任务执行器名称 是否冲突
         if (loadJobHandler(name) != null) {
             throw new RuntimeException("xxl-job jobhandler[" + name + "] naming conflicts.");
         }
@@ -232,7 +237,7 @@ public class XxlJobExecutor  {
             }
         }
 
-        // registry jobhandler
+        // 注册执行器 TODO：其它 Glue、Script JobHandler 怎么注册？
         registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
 
     }

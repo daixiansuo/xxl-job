@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
+ *
+ * 注册、回调、取消注册 ---> 入口。
+ *
  * Created by xuxueli on 17/5/10.
  */
 @Controller

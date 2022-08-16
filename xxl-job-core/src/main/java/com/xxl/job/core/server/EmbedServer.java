@@ -61,6 +61,7 @@ public class EmbedServer {
                         });
                 try {
                     // start server
+                    // TODO: 此处启动Netty服务，用于接收 HTTP 请求。 https://mingdeju.com/archives/Netty-Codec.html
                     ServerBootstrap bootstrap = new ServerBootstrap();
                     bootstrap.group(bossGroup, workerGroup)
                             .channel(NioServerSocketChannel.class)
