@@ -26,7 +26,7 @@ public class MethodJobHandler extends IJobHandler {
     public void execute() throws Exception {
         Class<?>[] paramTypes = method.getParameterTypes();
         if (paramTypes.length > 0) {
-            // TODO：参数怎么传递 ？
+            // 执行参数 通过 ThreadLocal（XxlJobHelper + XxlJobContext）传递。
             method.invoke(target, new Object[paramTypes.length]);       // method-param can not be primitive-types
         } else {
             method.invoke(target);
